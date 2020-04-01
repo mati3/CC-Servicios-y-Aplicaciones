@@ -3,9 +3,21 @@ from pandas import DataFrame
 import csv
 import numpy
 import pmdarima as pm
+import json
 
+def to_json(modelo):
+    datos ='{"San Francisco ":{'
+    contador = 0
+    for h in modelo["humidity"]:
+        if contador != len(modelo["humidity"])-1:
+            datos +='"Hora '+ str(contador) + '" : { ' +'"humidity" : '+ str(h)+', "temperature" : '+ str(modelo["temperature"][contador])+' },'
+        else:
+            datos +='"Hora '+ str(contador) + '" : { ' +'"humidity" : '+ str(h)+', "temperature" : '+ str(modelo["temperature"][contador])+' }'
+        contador += 1
+    datos +="} }"
+    return datos
 
-def crearModeloDesdeFile():
+def crearModeloDesdeFile(pd):
 
     df = pandas.read_csv('/home/mati/workflow/sanFrancisco.csv')
 
@@ -35,26 +47,26 @@ def crearModeloDesdeFile():
                         suppress_warnings=True, 
                         stepwise=True)
 
-
+    salida = pandas.DataFrame(columns=['humidity','temperature'])
     # Forecast
-    n_periods = 24 # One day
-    fcTemperature, confint = modelTemperature.predict(n_periods=n_periods, return_conf_int=True)
-
+    #n_periods = 24 # One day
+    fcTemperature, confint = modelTemperature.predict(n_periods=pd, return_conf_int=True)
+    salida['temperature'] = numpy.array(fcTemperature)
     # fc contains the forecasting for the next 24 hours.
-    print("temperature")
-    print(fcTemperature)
 
-    fcHumidity, confint = modelHumidity.predict(n_periods=n_periods, return_conf_int=True)
-
+    fcHumidity, confint = modelHumidity.predict(n_periods=pd, return_conf_int=True)
+    salida['humidity'] = fcHumidity
     # fc contains the forecasting for the next 24 hours.
-    print("humidity")
-    print(fcHumidity)
 
-#crearModeloDesdeFile()
+    return to_json(salida)
+
+
+#crearModeloDesdeFile(24)
 
 
 import pymongo
 from pymongo import MongoClient
+
 
 def crearModeloDesdeMongo(periods):
 
@@ -97,7 +109,7 @@ def crearModeloDesdeMongo(periods):
 
     fcHumidity, confint = modelHumidity.predict(n_periods=periods, return_conf_int=True)
     salida['humidity'] = fcHumidity
-
-    return salida
+    
+    return to_json(salida)
 
 #crearModeloDesdeMongo(24)
