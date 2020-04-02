@@ -17,13 +17,25 @@ cache = Cache(app)
 @app.route('/')
 @cache.cached(timeout=50)
 def hello_world():
-    return jsonify('Hello, World !'), 200
-
+    return jsonify('Hello, World ! appv2 '), 200
 
 @app.route('/servicio/v2/prediccion/24horas/')
 @cache.cached(timeout=50)
 def pred_24Horas():
-    return jsonify('pred_24Horas de v2'), 200
+    modelo = crearModeloDesdeOtraWeb(24)
+    return modelo, 200
+
+@app.route('/servicio/v2/prediccion/48horas/')
+@cache.cached(timeout=50)
+def pred_48Horas():
+    modelo = crearModeloDesdeOtraWeb(48)
+    return modelo, 200
+
+@app.route('/servicio/v2/prediccion/72horas/')
+@cache.cached(timeout=50)
+def pred_72Horas():
+    modelo = crearModeloDesdeOtraWeb(72)
+    return modelo, 200
 
 
 if __name__ == '__main__':
