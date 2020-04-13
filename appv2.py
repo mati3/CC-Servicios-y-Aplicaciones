@@ -1,7 +1,7 @@
 from flask import Flask
 import json
 from flask import jsonify
-
+from modelo import crearModeloDesdeOtraWeb
 from flask_caching import Cache
 
 config = {
