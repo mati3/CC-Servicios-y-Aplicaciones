@@ -10,7 +10,7 @@ import csv
 default_args = {
     'owner': 'Matilde Cabrera González',
     'depends_on_past': False,
-    'start_date': days_ago(2),
+    'start_date': days_ago(0),
     #'start_date': datetime.datetime(2020,09,10),
     'email': ['mati331@correo.ugr.es'],
     'email_on_failure': False,
@@ -126,7 +126,7 @@ BuildV1 = BashOperator(
 RunV1 = BashOperator(
     task_id='RunV1',
     depends_on_past=True,
-    bash_command="cd /tmp/workflow/CC-Servicios-y-Aplicaciones && docker run -p 8000:8000 --name ccmati -t mati331:ejer2_cc_v1",
+    bash_command="cd /tmp/workflow/CC-Servicios-y-Aplicaciones && docker run -p 8000:8000 --network='host' -t mati331:ejer2_cc_v1",
     dag=dag,
 )
 
@@ -148,7 +148,7 @@ BuildV2 = BashOperator(
 RunV2 = BashOperator(
     task_id='RunV2',
     depends_on_past=True,
-    bash_command="cd /tmp/workflow/CC-Servicios-y-Aplicaciones && docker run -p 5000:5000 --name ccmati -t mati331:ejer2_cc_v2",
+    bash_command="cd /tmp/workflow/CC-Servicios-y-Aplicaciones && docker run -p 5000:5000 -t mati331:ejer2_cc_v2",
     dag=dag,
 )
 
